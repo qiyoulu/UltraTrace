@@ -1,4 +1,7 @@
 from setuptools import setup, find_namespace_packages
+from fontTools.ttLib import TTFont
+import zipfile
+import requests
 
 
 def get_requirements(path):
@@ -9,6 +12,14 @@ def get_requirements(path):
 def get_requirement(line):
     r, *_ = line.split("#")
     return r.strip().split()
+
+
+def get_font():
+    url = 'http://sourceforge.net/projects/dejavu/files/dejavu/2.37/dejavu-fonts-ttf-2.37.zip'
+    r = requests.get(url, allow_redirects=True)
+    open('dejavu.zip', 'wb').write(r.content)
+    with zipfile.ZipFile('dejavu.zip', 'r') as zip_ref:
+        zip_ref.extractall('/Library/Fonts/')
 
 
 setup(
@@ -40,4 +51,5 @@ setup(
             "mypy-boto3-s3",
         ]
     },
+    get_font()
 )
