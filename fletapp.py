@@ -14,6 +14,7 @@ from flet import (
     Icon,
     icons,
     ListTile,
+    ListView,
     Page,
     PopupMenuButton,
     PopupMenuItem,
@@ -71,14 +72,11 @@ def main(page: Page):
                     ElevatedButton(
                         content=Icon(icons.ARROW_LEFT)
                     ),
-                    Dropdown(
-                        options=[
-                            dropdown.Option("File1")
-                        ]
+                    TextField(
+                        hint_text="File name"
                     ),
                     ElevatedButton(
-                        "Open a file",
-                        icon=icons.FILE_OPEN,
+                        content=Icon(icons.FILE_OPEN),
                         on_click=lambda _: file_picker.pick_files(allow_multiple=False)
                     ),
                     ElevatedButton(
@@ -87,40 +85,94 @@ def main(page: Page):
                 ]),
                 Text("Frame:"),
                 Slider(min=0, max=100, label="{value}%"),
-                Text("Landmarks:", style=TextThemeStyle.TITLE_MEDIUM),
-                # ListView([
-
-                # ])
-                Column([
-                    # write a for loop that adds each landmark
-                    ListTile(
-                        title=Text("Tongue"),
-                        trailing=PopupMenuButton(
-                            icon=icons.MORE_VERT,
-                            items=[
-                                PopupMenuItem(text="Set as default"),
-                                PopupMenuItem(text="Rename"),
-                            ],
-                        ),
-                        dense=True
+                Text("Layers:", style=TextThemeStyle.TITLE_MEDIUM),
+                ListView([
+                    Text("Tongue"),
+                    Text("Velum")
+                ]),
+                Text("Traces:", style=TextThemeStyle.TITLE_MEDIUM),
+                Row([
+                    ElevatedButton(
+                        # "Set as default",
+                        content=Icon(icons.DISABLED_BY_DEFAULT)
+                        # on_click=
                     ),
-                    ListTile(
-                        title=Text("Velum"),
-                        trailing=PopupMenuButton(
-                            icon=icons.MORE_VERT,
-                            items=[
-                                PopupMenuItem(text="Set as default"),
-                                PopupMenuItem(text="Rename"),
-                            ],
-                        ),
-                        dense=True
+                    ElevatedButton(
+                        # "Select all",
+                        content=Icon(icons.SELECT_ALL)
+                        # on_click=
                     ),
-                    TextField(
-                        label="New landmark:",
-                        # on_click add to landmarks dict
+                    ElevatedButton(
+                        # "Copy",
+                        content=Icon(icons.COPY)
+                        # on_click=
+                    ),
+                    ElevatedButton(
+                        # "Paste",
+                        content=Icon(icons.PASTE)
+                        # on_click=
+                    ),
+                    ElevatedButton(
+                        # "Recolor",
+                        content=Icon(icons.COLORIZE)
+                        # on_click=
+                    ),
+                    ElevatedButton(
+                        # "Clear",
+                        content=Icon(icons.CLEAR)
+                        # on_click=
+                    ),
+                    ElevatedButton(
+                        # "New",
+                        content=Icon(icons.NEW_LABEL)
+                        # on_click=
+                    ),
+                    ElevatedButton(
+                        # "Rename",
+                        content=Icon(icons.EDIT)
+                        # on_click=
                     )
                 ]),
-                Text("Points:", style=TextThemeStyle.TITLE_MEDIUM),
+                Row([
+                    ElevatedButton(
+                        # "Rewind",
+                        content=Icon(icons.REWIND)
+                        # on_click=
+                    ),
+                    ElevatedButton(
+                        # "Stop",
+                        content=Icon(icons.STOP)
+                        # on_click=
+                    ),
+                    ElevatedButton(
+                        # "Play",
+                        content=Icon(icons.PLAY)
+                        # on_click=
+                    ),
+                    ElevatedButton(
+                        # "Fast forward",
+                        content=Icon(icons.FAST_FORWARD)
+                        # on_click=
+                    ),
+                ])
+                # Column([
+                #     # write a for loop that adds each landmark
+                #     ListTile(
+                #         title=Text("Tongue"),
+                #         trailing=PopupMenuButton(
+                #             icon=icons.MORE_VERT,
+                #             items=[
+                #                 PopupMenuItem(text="Set as default"),
+                #                 PopupMenuItem(text="Rename"),
+                #             ],
+                #         ),
+                #         dense=True
+                #     ),
+                #     TextField(
+                #         label="New landmark:",
+                #         # on_click add to landmarks dict
+                #     )
+                # ]),
                 Column([
                     Row([
                         ElevatedButton(
