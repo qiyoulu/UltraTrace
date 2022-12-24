@@ -94,7 +94,7 @@ def main(page: Page):
                 Row([
                     ElevatedButton(
                         # "Set as default",
-                        content=Icon(icons.DISABLED_BY_DEFAULT)
+                        content=Icon(icons.SETTINGS)
                         # on_click=
                     ),
                     ElevatedButton(
@@ -111,7 +111,9 @@ def main(page: Page):
                         # "Paste",
                         content=Icon(icons.PASTE)
                         # on_click=
-                    ),
+                    )
+                ]),
+                Row([
                     ElevatedButton(
                         # "Recolor",
                         content=Icon(icons.COLORIZE)
@@ -124,7 +126,7 @@ def main(page: Page):
                     ),
                     ElevatedButton(
                         # "New",
-                        content=Icon(icons.NEW_LABEL)
+                        content=Icon(icons.PLUS_ONE)
                         # on_click=
                     ),
                     ElevatedButton(
@@ -136,7 +138,7 @@ def main(page: Page):
                 Row([
                     ElevatedButton(
                         # "Rewind",
-                        content=Icon(icons.REWIND)
+                        content=Icon(icons.FAST_REWIND)
                         # on_click=
                     ),
                     ElevatedButton(
@@ -146,15 +148,15 @@ def main(page: Page):
                     ),
                     ElevatedButton(
                         # "Play",
-                        content=Icon(icons.PLAY)
+                        content=Icon(icons.PLAY_ARROW)
                         # on_click=
                     ),
                     ElevatedButton(
                         # "Fast forward",
                         content=Icon(icons.FAST_FORWARD)
                         # on_click=
-                    ),
-                ])
+                    )
+                ]),
                 # Column([
                 #     # write a for loop that adds each landmark
                 #     ListTile(
@@ -173,46 +175,6 @@ def main(page: Page):
                 #         # on_click add to landmarks dict
                 #     )
                 # ]),
-                Column([
-                    Row([
-                        ElevatedButton(
-                            "Undo",
-                            icon=icons.UNDO
-                        ),
-                        ElevatedButton(
-                            "Redo",
-                            icon=icons.REDO
-                        )
-                    ]),
-                    Row([
-                        ElevatedButton(
-                            "Select all",
-                            icon=icons.SELECT_ALL
-                        ),
-                        ElevatedButton(
-                            "Copy",
-                            icon=icons.COPY
-                        ),
-                        ElevatedButton(
-                            "Paste",
-                            icon=icons.PASTE
-                        ),
-                    ]),
-                    Row([
-                        ElevatedButton(
-                            "Minus",
-                            icon=icons.EXPOSURE_MINUS_1
-                        ),
-                        ElevatedButton(
-                            "Equal",
-                            icon=icons.EQUALIZER
-                        ),
-                        ElevatedButton(
-                            "Plus",
-                            icon=icons.PLUS_ONE
-                        )
-                    ])
-                ])
             ])
         ])
     )
