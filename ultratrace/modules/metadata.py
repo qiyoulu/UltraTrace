@@ -8,8 +8,9 @@ import math
 import re
 import wx
 
-#from tkinter import filedialog
-from magic import Magic # python-magic
+# from tkinter import filedialog
+from magic import Magic  # python-magic
+
 
 class Metadata(Module):
     def __init__(self, frame, path):
@@ -21,10 +22,10 @@ class Metadata(Module):
             for example, it will try to locate files that have the same base filename and
             each of a set of required extensions
         '''
-        info( ' - initializing module: Data')
+        info(' - initializing module: Data')
         if path == None:
             frame.update()
-            #path = filedialog.askdirectory(initialdir=os.getcwd(), title="Choose a directory")
+            # path = filedialog.askdirectory(initialdir=os.getcwd(), title="Choose a directory")
             with wx.DirDialog(frame, "Choose a directory", os.getcwd(), wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST) as dirDialogue:
                 if dirDialogue.ShowModal() == wx.ID_CANCEL:
                     return  # nevermind
@@ -34,22 +35,22 @@ class Metadata(Module):
                     error("No directory chosen - exiting")
                     exit(1)
 
-        debug( '   - parsing directory: `%s`' % path )
+        debug('   - parsing directory: `%s`' % path)
 
-        if os.path.exists( path ) == False:
-            severe( "   - ERROR: `%s` could not be located" % path )
+        if os.path.exists(path) == False:
+            severe("   - ERROR: `%s` could not be located" % path)
             exit(1)
 
         self.app = frame
         self.path = path
 
-        self.mdfile = os.path.join( self.path, 'metadata.json' )
+        self.mdfile = os.path.join(self.path, 'metadata.json')
 
         # either load up existing metadata
-        if os.path.exists( self.mdfile ):
-            debug( "   - found metadata file: `%s`" % self.mdfile )
-            with open( self.mdfile, 'r' ) as f:
-                self.data = json.load( f )
+        if os.path.exists(self.mdfile):
+            debug("   - found metadata file: `%s`" % self.mdfile)
+            with open(self.mdfile, 'r') as f:
+                self.data = json.load(f)
 
         # or create new stuff
         else:
@@ -57,45 +58,45 @@ class Metadata(Module):
                 "read the files"
 
             self.path = os.path.abspath(self.path)
-            debug( "   - creating new metadata file: `%s`" % self.mdfile )
+            debug("   - creating new metadata file: `%s`" % self.mdfile)
             self.data = {
                 'firstrun_path': self.path,
                 'defaultTraceName': 'tongue',
                 'traces': {
                     'tongue': {
                         'color': 'red',
-                        'files': {} } },
-                'offset':0,
-                'files': {} }
+                        'files': {}}},
+                'offset': 0,
+                'files': {}}
 
             # we want each object to have entries for everything here
-            fileKeys = { '_prev', '_next', 'processed', 'offset' } # and `processed`
+            fileKeys = {'_prev', '_next', 'processed', 'offset'}  # and `processed`
             MIMEs = {
-                'audio/x-wav'       :   ['.wav'],
-                'audio/x-flac'      :   ['.flac'],
-                'audio/wav'     :   ['.wav'],
-                'audio/flac'        :   ['.flac'],
-                'application/dicom' :   ['.dicom'],
-                'text/plain'        :   ['.TextGrid', 'US.txt', '.txt', '.dat'],
-                'application/octet-stream' : ['.ult'],
-                'application/x-dosexec'    : ['.ult']
+                'audio/x-wav': ['.wav'],
+                'audio/x-flac': ['.flac'],
+                'audio/wav': ['.wav'],
+                'audio/flac': ['.flac'],
+                'application/dicom': ['.dicom'],
+                'text/plain': ['.TextGrid', 'US.txt', '.txt', '.dat'],
+                'application/octet-stream': ['.ult'],
+                'application/x-dosexec': ['.ult']
             }
             files = {}
 
             splines = None
 
             # now get the objects in subdirectories
-            for path, dirs, fs in os.walk( self.path ):
+            for path, dirs, fs in os.walk(self.path):
                 for f in fs:
                     # exclude some filetypes explicitly here by MIME type
-                    filepath = os.path.join( path, f )
-                    filename, extension = os.path.splitext( f )
+                    filepath = os.path.join(path, f)
+                    filename, extension = os.path.splitext(f)
 
                     # allow us to follow symlinks
                     real_filepath = os.path.realpath(filepath)
 
-                    #make file path relative to metadata file
-                    filepath = os.path.relpath(filepath,start=self.path)
+                    # make file path relative to metadata file
+                    filepath = os.path.relpath(filepath, start=self.path)
 
                     mime_type = Magic(mime=True).from_file(real_filepath)
 
@@ -116,14 +117,14 @@ class Metadata(Module):
                         self.importOldMeasurement(real_filepath, filename)
                     elif mime_type in MIMEs:
                         # add `good` files
-                        if extension in MIMEs[ mime_type ]:
+                        if extension in MIMEs[mime_type]:
                             if filename not in files:
-                                files[filename] = { key:None for key in fileKeys }
+                                files[filename] = {key: None for key in fileKeys}
                             files[filename][extension] = filepath
                     elif mime_type == 'image/png' and '_dicom_to_png' in path:
                         # check for preprocessed dicom files
-                        name, frame = filename.split( '_frame_' )
-                        #debug(files)
+                        name, frame = filename.split('_frame_')
+                        # debug(files)
                         # if len(files) > 0:
                         # might be able to combine the following; check
                         if name not in files:
@@ -134,13 +135,13 @@ class Metadata(Module):
 
             # check that we find at least one file
             if len(files) == 0:
-                severe( '   - ERROR: `%s` contains no supported files' % path )
+                severe('   - ERROR: `%s` contains no supported files' % path)
                 exit()
 
             # sort the files so that we can guess about left/right ... extrema get None/null
             # also add in the "traces" bit here
             _prev = None
-            for key in sorted( files.keys() ):
+            for key in sorted(files.keys()):
                 if _prev != None:
                     files[_prev]['_next'] = key
                 files[key]['_prev'] = _prev
@@ -148,25 +149,25 @@ class Metadata(Module):
                 files[key]['name'] = key
 
             # sort files, set the geometry, and write
-            self.data[ 'files' ] = [ files[key] for key in sorted(files.keys()) ]
-            self.data[ 'geometry' ] = '1150x800+1400+480'
+            self.data['files'] = [files[key] for key in sorted(files.keys())]
+            self.data['geometry'] = '1150x800+1400+480'
 
             if splines != None:
                 self.importULTMeasurement(splines)
 
             self.write()
 
-        #self.app.geometry( self.getTopLevel('geometry') )
+        # self.app.geometry( self.getTopLevel('geometry') )
         dimensions = re.split('[\+x]', self.getTopLevel('geometry'))
         dimensions = [int(i) for i in dimensions]
-        self.app.SetSize( dimensions[2], dimensions[3], dimensions[0], dimensions[1] )
+        self.app.SetSize(dimensions[2], dimensions[3], dimensions[0], dimensions[1])
         self.files = self.getFilenames()
 
     def importOldMeasurement(self, filepath, filename):
         '''
         Writes information from .measurement file into metadata file
         '''
-        #this is a hack -- should really go into Dicom (which is not yet loaded) and check
+        # this is a hack -- should really go into Dicom (which is not yet loaded) and check
         defaultx = 800
         defaulty = 600
 
@@ -180,12 +181,12 @@ class Metadata(Module):
         # new_array = [{"x":point1/800,"y":point2/600} for point1, point2 in array]
         new_array = []
         for point1, point2 in array:
-            #assuming traces were made at 1x zoom and no pan
-            el = {"x":point1/defaultx,"y":point2/defaulty} #converts coords to "true" (i.e. % through each axis),
+            # assuming traces were made at 1x zoom and no pan
+            el = {"x": point1 / defaultx, "y": point2 / defaulty}  # converts coords to "true" (i.e. % through each axis),
             new_array.append(el)
         list_of_files = self.data['traces']['tongue']['files']
         if not filenum in list_of_files:
-            list_of_files[filenum]={}
+            list_of_files[filenum] = {}
         list_of_files[filenum][framenum] = new_array
 
     def importULTMeasurement(self, filepath):
@@ -214,16 +215,17 @@ class Metadata(Module):
         for linenum, line in enumerate(data[1:], start=2):
             dt = {}
             for k in coords_loc:
-                conf = [100]*42
+                conf = [100] * 42
                 if k in confidence_loc:
                     offset = confidence_loc[k]
                     for i in range(42):
-                        if line[i+offset]: conf[i] = int(line[i+offset])
+                        if line[i + offset]:
+                            conf[i] = int(line[i + offset])
                 pts = []
                 offset = coords_loc[k]
                 for i in range(42):
-                    xs = line[(2*i)+offset]
-                    ys = line[(2*i)+offset+1]
+                    xs = line[(2 * i) + offset]
+                    ys = line[(2 * i) + offset + 1]
                     if xs and ys and conf[i] > 50:
                         pts.append((float(xs.replace(',', '.')), float(ys.replace(',', '.'))))
                 if pts:
@@ -252,10 +254,10 @@ class Metadata(Module):
                     framenum = 0
                     for i in range(len(ts)):
                         if ts[i] >= timestamp:
-                            framenum = i-1
+                            framenum = i - 1
                             break
                     height = (reader.PixPerVector + reader.ZeroOffset) / reader.PixelsPerMm
-                    width = 2*math.cos((math.pi/2) - (reader.Angle * reader.NumVectors/2))*height
+                    width = 2 * math.cos((math.pi / 2) - (reader.Angle * reader.NumVectors / 2)) * height
                     for k in data:
                         if fblob['name'] not in self.data['traces'][k]['files']:
                             self.data['traces'][k]['files'][fblob['name']] = {}
@@ -273,29 +275,29 @@ class Metadata(Module):
         Write metadata out to file
         '''
         # debug(self.data, 'write')
-        mdfile = self.mdfile if _mdfile==None else _mdfile
-        with open( mdfile, 'w' ) as f:
-            json.dump( self.data, f, indent=3 )
+        mdfile = self.mdfile if _mdfile == None else _mdfile
+        with open(mdfile, 'w') as f:
+            json.dump(self.data, f, indent=3)
 
-    def getFilenames( self ):
+    def getFilenames(self):
         '''
         Returns a list of all the files discovered from the initial directory traversal
         '''
-        return [ f['name'] for f in self.data['files'] ]
+        return [f['name'] for f in self.data['files']]
 
-    def getPreprocessedDicom( self, _frame=None ):
+    def getPreprocessedDicom(self, _frame=None):
         '''
         Gets preprocessed (.dicom->.png) picture data for a given frame
         '''
-        frame = self.app.frame if _frame==None else _frame #int(_frame)-1
-        processed = self.getFileLevel( 'processed' )
+        frame = self.app.frame if _frame == None else _frame  # int(_frame)-1
+        processed = self.getFileLevel('processed')
         try:
             return self.unrelativize(processed[str(frame)])
-        except Exception as e: # catches missing frames and missing preprocessed data
+        except Exception as e:  # catches missing frames and missing preprocessed data
             error(e)
             return None
 
-    def getTopLevel( self, key ):
+    def getTopLevel(self, key):
         '''
         Get directory-level metadata
         '''
@@ -304,23 +306,23 @@ class Metadata(Module):
         else:
             return None
 
-    def setTopLevel( self, key, value ):
+    def setTopLevel(self, key, value):
         '''
         Set directory-level metadata
         '''
-        self.data[ key ] = value
+        self.data[key] = value
         self.write()
 
-    def getFileLevel( self, key, _fileid=None ):
+    def getFileLevel(self, key, _fileid=None):
         '''
         Get file-level metadata
         '''
-        fileid = self.app.currentFID if _fileid==None else _fileid
-        mddict = self.data[ 'files' ][ fileid ]
+        fileid = self.app.currentFID if _fileid == None else _fileid
+        mddict = self.data['files'][fileid]
 
         if key == 'all':
             return mddict.keys()
-        elif key in mddict and mddict[ key ] != None:
+        elif key in mddict and mddict[key] != None:
             # if type(mddict[key]) is dict:
             #   for el in mddict[key].keys():
             #       mddict[key][el] = os.path.join(self.path, mddict[key][el])
@@ -348,37 +350,37 @@ class Metadata(Module):
                 error('%s does not exist' % pth)
             return None
 
-    def setFileLevel( self, key, value, _fileid=None ):
+    def setFileLevel(self, key, value, _fileid=None):
         '''
         Set file-level metadata
         '''
-        fileid = self.app.currentFID if _fileid==None else _fileid
-        self.data[ 'files' ][ fileid ][ key ] = value
+        fileid = self.app.currentFID if _fileid == None else _fileid
+        self.data['files'][fileid][key] = value
         self.write()
 
-    def getCurrentFilename( self ):
+    def getCurrentFilename(self):
         '''
         Helper function for interacting with traces
         '''
-        return self.data[ 'files' ][ self.app.currentFID ][ 'name' ]
+        return self.data['files'][self.app.currentFID]['name']
 
-    def getCurrentTraceColor( self ):
+    def getCurrentTraceColor(self):
         '''
         Returns color of the currently selected trace
         '''
         trace = self.app.Trace.getCurrentTraceName()
-        if trace==None:
+        if trace == None:
             return None
-        return self.data[ 'traces' ][ trace ][ 'color' ]
+        return self.data['traces'][trace]['color']
 
-    def setTraceColor( self, trace, color ):
+    def setTraceColor(self, trace, color):
         '''
         Set color for a particular trace name
         '''
-        self.data[ 'traces' ][ trace ][ 'color' ] = color
+        self.data['traces'][trace]['color'] = color
         self.write()
 
-    def getCurrentTraceAllFrames( self ):
+    def getCurrentTraceAllFrames(self):
         '''
         Returns a dictionary of with key->value give by frame->[crosshairs]
         for the current trace and file
@@ -386,7 +388,7 @@ class Metadata(Module):
         trace = self.app.Trace.getCurrentTraceName()
         filename = self.getCurrentFilename()
         try:
-            return self.data[ 'traces' ][ trace ][ 'files' ][ filename ]
+            return self.data['traces'][trace]['files'][filename]
         except KeyError as e:
             return {}
 
@@ -394,24 +396,24 @@ class Metadata(Module):
         ''' '''
         frames = self.getCurrentTraceAllFrames()
         tracedFrames = []
-        for frame,traces in frames.items():
+        for frame, traces in frames.items():
             if traces != []:
                 tracedFrames.append(frame)
         return tracedFrames
 
-    def getTraceCurrentFrame( self, trace ):
+    def getTraceCurrentFrame(self, trace):
         '''
         Returns a list of the crosshairs for the given trace at the current file
         and current frame
         '''
         filename = self.getCurrentFilename()
-        frame    = str(self.app.frame)# if _frame==None else str(_frame)
+        frame = str(self.app.frame)  # if _frame==None else str(_frame)
         try:
-            return self.data[ 'traces' ][ trace ][ 'files' ][ filename ][ frame ]
+            return self.data['traces'][trace]['files'][filename][frame]
         except KeyError as e:
             return []
 
-    def setCurrentTraceCurrentFrame( self, crosshairs ):
+    def setCurrentTraceCurrentFrame(self, crosshairs):
         '''
         Writes an array of the current crosshairs to the metadata dictionary at
         the current trace, current file, and current frame
@@ -419,20 +421,20 @@ class Metadata(Module):
         trace = self.app.Trace.getCurrentTraceName()
         filename = self.getCurrentFilename()
         frame = self.app.frame
-        if trace not in self.data[ 'traces' ]:
-            self.data[ 'traces' ][ trace ] = { 'files':{}, 'color':None }
-        if filename not in self.data[ 'traces' ][ trace ][ 'files' ]:
-            self.data[ 'traces' ][ trace ][ 'files' ][ filename ] = {}
-        self.data[ 'traces' ][ trace ][ 'files' ][ filename ][ str(frame) ] = crosshairs
+        if trace not in self.data['traces']:
+            self.data['traces'][trace] = {'files': {}, 'color': None}
+        if filename not in self.data['traces'][trace]['files']:
+            self.data['traces'][trace]['files'][filename] = {}
+        self.data['traces'][trace]['files'][filename][str(frame)] = crosshairs
         self.write()
 
-    def tracesExist( self, trace ):
+    def tracesExist(self, trace):
         '''
 
         '''
         filename = self.getCurrentFilename()
         try:
-            dict = self.data[ 'traces' ][ trace ][ 'files' ][ filename ]
+            dict = self.data['traces'][trace]['files'][filename]
             # debug(dict)
             return [x for x in dict if dict[x] != []]
         except KeyError as e:

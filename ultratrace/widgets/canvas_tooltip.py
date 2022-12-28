@@ -1,6 +1,7 @@
 from tkinter.ttk import Frame, Label
 from tkinter import Toplevel
 
+
 class CanvasTooltip:
     '''
     It creates a tooltip for a given canvas tag or id as the mouse is
@@ -110,15 +111,15 @@ class CanvasTooltip:
         self.tw.wm_overrideredirect(True)
 
         win = Frame(self.tw,
-                       # background=bg,
-                       borderwidth=0)
+                    # background=bg,
+                    borderwidth=0)
         label = Label(win,
-                          text=self.text,
-                          justify='left',
-                          background=bg,
-                          relief="solid",
-                          borderwidth=0,
-                          wraplength=self.wraplength)
+                      text=self.text,
+                      justify='left',
+                      background=bg,
+                      relief="solid",
+                      borderwidth=0,
+                      wraplength=self.wraplength)
 
         label.grid(padx=(pad[0], pad[2]),
                    pady=(pad[1], pad[3]),

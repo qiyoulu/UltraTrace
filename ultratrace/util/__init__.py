@@ -1,6 +1,8 @@
 from .logging import *
 
 __platform = None
+
+
 def get_platform():
     # cache this result
     global __platform
@@ -13,7 +15,8 @@ def get_platform():
         return __platform
     return __platform
 
-def printProgressBar(iteration, total, prefix = '', suffix = '', decimals = 1, length = 25, fill = '█'):
+
+def printProgressBar(iteration, total, prefix='', suffix='', decimals=1, length=25, fill='█'):
     """
     Call in a loop to create terminal progress bar
     @params:
@@ -28,13 +31,15 @@ def printProgressBar(iteration, total, prefix = '', suffix = '', decimals = 1, l
     percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
     filledLength = int(length * iteration // total)
     bar = fill * filledLength + '-' * (length - filledLength)
-    print('\r%s |%s| %s%% %s' % (prefix, bar, percent, suffix), end = '\r')
+    print('\r%s |%s| %s%% %s' % (prefix, bar, percent, suffix), end='\r')
     # Print New Line on Complete
     if iteration == total:
         print()
 
+
 CROSSHAIR_SELECT_RADIUS = 9
 CROSSHAIR_DRAG_BUFFER = 20
+
 
 def decode_bytes(byt):
     for encoding in ['utf-8', 'Windows-1251', 'Windows-1252', 'ISO-8859-1']:

@@ -1,5 +1,6 @@
 from tkinter.ttk import Label
 
+
 class Header(Label):
     def __init__(self, master, text):
         '''

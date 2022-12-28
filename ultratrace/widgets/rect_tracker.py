@@ -7,7 +7,7 @@ class RectTracker:
 
     def draw(self, start, end, **opts):
         """Draw the rectangle"""
-        return self.canvas.create_rectangle(*(list(start)+list(end)), **opts)
+        return self.canvas.create_rectangle(*(list(start) + list(end)), **opts)
 
     def autodraw(self, **opts):
         """Setup automatic drawing; supports command option"""

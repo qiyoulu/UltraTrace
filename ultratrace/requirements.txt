@@ -15,5 +15,4 @@ tqdm
 xparser
 python-magic
 flask
-attrdict3
 wxpython

@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
 import wx
-import PIL
-import os
+# import PIL
+# import os
 import argparse
-from .widgets import Header
+# from .widgets import Header
 from .util.logging import *
-from . import util
+# from . import util
 from . import modules
 from flask import Flask
 app = Flask(__name__)

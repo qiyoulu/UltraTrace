@@ -4,11 +4,13 @@ FROM python:3
 WORKDIR /app
 
 RUN apt-get update -y
-RUN apt-get install -y apt-utils python3 ffmpeg portaudio19-dev libportaudio2 ffmpeg wxpython-tools python3-flask
+RUN apt-get install --no-install-recommends -y apt-utils python3 ffmpeg portaudio19-dev \
+    libportaudio2 ffmpeg wxpython-tools python3-flask libgtk-3-dev
 
+RUN pip install --verbose --no-cache-dir --upgrade pip
+RUN pip install --verbose --no-cache-dir attrdict3
 COPY requirements.txt requirements.txt
-RUN pip install --no-cache-dir --upgrade pip
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --verbose --no-cache-dir -r requirements.txt
 
 COPY . .
 COPY __main__.py app.py
